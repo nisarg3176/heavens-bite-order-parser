@@ -1,181 +1,215 @@
 # Heaven's Bite Bakery — WhatsApp Order Extractor
 
-A Proof of Concept (POC) web application that converts WhatsApp bakery conversations into structured order records using AI.
+An AI-powered web application that converts WhatsApp bakery conversations into structured order records automatically.
 
-Built for **Heaven's Bite Bakery**, a home-based bakery that receives most orders via WhatsApp.
+Built as a Proof of Concept (POC) for Heaven's Bite Bakery, a home-based bakery that receives customer orders primarily through WhatsApp.
 
-![Stack](https://img.shields.io/badge/React-18-61DAFB)
-![Stack](https://img.shields.io/badge/FastAPI-Python-009688)
-![Stack](https://img.shields.io/badge/AI-Gemini%20%2F%20OpenAI-4285F4)
+---
 
-## Problem
+## Problem Statement
 
-During busy periods, the bakery owner manually reads WhatsApp chats and writes down order details. This POC automates that process.
+Small bakery owners often manage orders manually through WhatsApp chats. During peak periods, extracting customer details, item quantities, delivery information, and special instructions becomes time-consuming and error-prone.
+
+---
 
 ## Solution
 
-1. Export a WhatsApp chat as `.txt` (or upload screenshots / paste text)
-2. AI extracts structured order fields
-3. Results display in a clean UI with bakery statistics
+This application automatically converts WhatsApp conversations into structured bakery orders using AI.
 
-### Extracted Fields
+Users can:
 
-- Customer Name
-- Phone Number
-- Ordered Items & Quantities
-- Delivery Address
-- Delivery Time
-- Special Instructions
-- Order Date
+* Upload exported WhatsApp chat files (.txt)
+* Upload WhatsApp screenshot images
+* Paste raw conversation text
 
-### Explicitly Out of Scope
+The system extracts relevant order information and stores it in a structured format while generating business statistics.
 
-Payment tracking · Delivery tracking · Inventory · Dashboards · Reminders
+---
 
-## Project Structure
+## Features
 
-```
-OKC2/
-├── backend/                 # FastAPI Python backend
-│   ├── app/
-│   │   ├── main.py          # Application entry point
-│   │   ├── config.py        # Environment settings
-│   │   ├── database.py      # SQLAlchemy async setup
-│   │   ├── models/          # Database models
-│   │   ├── schemas/         # Pydantic request/response schemas
-│   │   ├── services/        # Business logic (parser, AI, orders)
-│   │   └── routers/         # API route handlers
-│   ├── requirements.txt
-│   └── .env.example
-├── frontend/                # React + Vite + Tailwind UI
-│   ├── src/
-│   │   ├── api/             # API client
-│   │   ├── components/      # UI components
-│   │   └── types/           # TypeScript interfaces
-│   └── package.json
-├── samples/                 # Sample WhatsApp exports & expected outputs
-├── docs/                    # API, database, and AI prompt docs
-└── README.md
-```
+### AI-Powered Order Extraction
 
-## Quick Start
+Extracts:
 
-### Prerequisites
+* Customer Name
+* Phone Number
+* Ordered Items
+* Item Quantities
+* Delivery Address
+* Delivery Time
+* Special Instructions
+* Order Date
 
-- Python 3.11+
-- Node.js 18+
-- A [Google Gemini API key](https://aistudio.google.com/apikey) (free tier works) **or** OpenAI API key
+### Multiple Input Methods
 
-### 1. Backend Setup
+* WhatsApp Chat Export (.txt)
+* Screenshot Upload
+* Direct Text Paste
 
-```bash
-cd backend
-python -m venv venv
+### Bakery Dashboard
 
-# Windows
-venv\Scripts\activate
+* Total Orders
+* Total Items Sold
+* Unique Customers
+* Most Ordered Products
+* Recent Order History
 
-# macOS/Linux
-source venv/bin/activate
+### Order Management
 
-pip install -r requirements.txt
-copy .env.example .env   # Windows
-# cp .env.example .env   # macOS/Linux
-```
+* Automatic order storage
+* Historical order tracking
+* Statistics generation
 
-Edit `.env` and add your API key:
+---
 
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your_key_here
-```
+## Live Demo
 
-Start the API server:
+Frontend:
 
-```bash
-uvicorn app.main:app --reload --port 8000
-```
+https://heavens-bite-order-parser.vercel.app
 
-API docs: http://localhost:8000/docs
+Backend API:
 
-### 2. Frontend Setup
+https://heavens-bite-order-parser.onrender.com/docs
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173
-
-### 3. Try a Sample Order
-
-1. Click **Chat Export** tab
-2. Upload `samples/chat_export_sarah_khan.txt`
-3. View extracted order details and updated statistics
-
-### Optional: Pre-load demo statistics (no AI needed)
-
-```bash
-cd backend
-python seed_demo.py
-```
-
-This seeds 3 sample orders so the statistics panel is populated before your live demo.
-
-## Demo Without AI (UI Only)
-
-The frontend shows a warning if no API key is configured. For full demo, configure Gemini (recommended for students — free tier available).
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| POST | `/api/orders/extract/text` | Extract from `.txt` export |
-| POST | `/api/orders/extract/images` | Extract from screenshots |
-| POST | `/api/orders/extract/raw` | Extract from pasted text |
-| GET | `/api/orders` | List saved orders |
-| GET | `/api/orders/statistics` | Bakery statistics |
-| GET | `/api/orders/{id}` | Get order by ID |
-
-See [docs/API.md](docs/API.md) for full documentation.
+---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS |
-| Backend | FastAPI, SQLAlchemy, Pydantic |
-| Database | SQLite (async via aiosqlite) |
-| AI | Google Gemini 2.0 Flash (default) or OpenAI GPT-4o-mini |
-| Vision | Same AI provider for screenshot extraction |
+### Frontend
 
-## Database
+* React 18
+* TypeScript
+* Vite
+* Tailwind CSS
+* Lucide Icons
 
-Single `orders` table with JSON-encoded line items. See [docs/DATABASE.md](docs/DATABASE.md).
+### Backend
 
-## AI Prompt
+* FastAPI
+* SQLAlchemy
+* Pydantic
 
-Documented in [docs/AI_PROMPT.md](docs/AI_PROMPT.md). Source: `backend/app/services/ai_extractor.py`.
+### Database
 
-## Sample Data
+* SQLite
 
-| File | Description |
-|------|-------------|
-| `samples/chat_export_sarah_khan.txt` | Delivery order with allergy notes |
-| `samples/chat_export_james_obrien.txt` | Pickup order with item change |
-| `samples/chat_export_priya_sharma.txt` | Large custom baby shower order |
-| `samples/sample_outputs.json` | Expected extraction results |
+### AI Layer
 
-## Student Demo Tips
+* Google Gemini 2.0 Flash
 
-1. Show WhatsApp export steps (chat → ⋮ → Export chat → Without media)
-2. Upload sample file live and explain each extracted field
-3. Upload a second sample to populate statistics (most ordered items chart)
-4. Mention future extensions: payments, delivery tracking, inventory (out of scope)
-5. Show `/docs` for API documentation during technical Q&A
+### Deployment
+
+* Vercel (Frontend)
+* Render (Backend)
+
+---
+
+## System Architecture
+
+WhatsApp Chat / Screenshot
+
+↓
+
+React Frontend
+
+↓
+
+FastAPI Backend
+
+↓
+
+Gemini AI Extraction
+
+↓
+
+Structured Order JSON
+
+↓
+
+SQLite Database
+
+↓
+
+Statistics Dashboard
+
+---
+
+## API Endpoints
+
+| Method | Endpoint                   | Description                  |
+| ------ | -------------------------- | ---------------------------- |
+| GET    | /health                    | Health Check                 |
+| POST   | /api/orders/extract/text   | Extract from WhatsApp Export |
+| POST   | /api/orders/extract/images | Extract from Screenshots     |
+| POST   | /api/orders/extract/raw    | Extract from Pasted Text     |
+| GET    | /api/orders                | List Orders                  |
+| GET    | /api/orders/statistics     | Statistics Dashboard         |
+| GET    | /api/orders/{id}           | Get Order Details            |
+
+Interactive API Documentation:
+
+https://heavens-bite-order-parser.onrender.com/docs
+
+---
+
+## Project Structure
+
+```text
+backend/
+├── app/
+│   ├── routers/
+│   ├── services/
+│   ├── schemas/
+│   ├── models/
+│   ├── database.py
+│   ├── config.py
+│   └── main.py
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── api/
+│   ├── types/
+│   └── App.tsx
+```
+
+---
+
+## Example Workflow
+
+1. Export a WhatsApp conversation.
+2. Upload the .txt file.
+3. AI processes the conversation.
+4. Order details are extracted automatically.
+5. Order is saved to the database.
+6. Dashboard statistics update instantly.
+
+---
+
+## Future Scope
+
+The following features are intentionally out of scope for this POC but could be added in future versions:
+
+* Payment Tracking
+* Delivery Tracking
+* Inventory Management
+* Customer Notifications
+* WhatsApp Business Integration
+* Analytics Dashboard
+* Automated Invoicing
+
+---
+
+## Author
+
+Nisarg Parashar
+
+Built as part of the OKCredit Internship POC submission.
+
+---
 
 ## License
 
-MIT — Free for educational and demonstration use.
+MIT License
