@@ -27,7 +27,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function checkHealth(): Promise<HealthStatus> {
-  const res = await fetch(`${API_BASE}/api/health`)
+  const res = await fetch(`${API_BASE}/health`)
   return handleResponse<HealthStatus>(res)
 }
 
@@ -85,9 +85,9 @@ export async function extractFromPaste(
   return handleResponse<ExtractionResponse>(res)
 }
 
-export async function checkHealth(): Promise<HealthStatus> {
-  const res = await fetch(`${API_BASE}/health`)
-  return handleResponse<HealthStatus>(res)
+export async function fetchStatistics(): Promise<Statistics> {
+  const res = await fetch(`${API_BASE}/api/orders`)
+  return handleResponse<Statistics>(res)
 }
 
 export async function fetchOrders(limit = 50): Promise<OrderRecord[]> {
