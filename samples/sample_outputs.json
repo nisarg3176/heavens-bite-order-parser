@@ -1,0 +1,53 @@
+[
+  {
+    "source_file": "chat_export_sarah_khan.txt",
+    "expected_extraction": {
+      "customer_name": "Sarah Khan",
+      "phone_number": "+1 718-555-0142",
+      "items": [
+        { "name": "Chocolate Fudge Cupcakes", "quantity": 2, "notes": "No nuts (allergy)" },
+        { "name": "Red Velvet Cake (6 inch)", "quantity": 1, "notes": "Write 'Happy Birthday Mom!' in pink icing" },
+        { "name": "Vanilla Cookies", "quantity": 6, "notes": null }
+      ],
+      "delivery_address": "42 Maple Street, Apt 3B, Brooklyn NY 11201",
+      "delivery_time": "Saturday 5 PM (13/06/2025)",
+      "special_instructions": "No nuts in cupcakes (allergy). Write 'Happy Birthday Mom!' on cake in pink icing.",
+      "order_date": "12/06/2025",
+      "confidence": "high"
+    }
+  },
+  {
+    "source_file": "chat_export_james_obrien.txt",
+    "expected_extraction": {
+      "customer_name": "James O'Brien",
+      "phone_number": null,
+      "items": [
+        { "name": "Lemon Tarts", "quantity": 6, "notes": "Extra glaze if possible" },
+        { "name": "Blueberry Muffins", "quantity": 2, "notes": null }
+      ],
+      "delivery_address": "88 Oak Avenue, Queens",
+      "delivery_time": "Friday 4pm (13/06/2025) - Pickup",
+      "special_instructions": "Extra glaze on the tarts if possible",
+      "order_date": "06/12/2025",
+      "confidence": "high"
+    }
+  },
+  {
+    "source_file": "chat_export_priya_sharma.txt",
+    "expected_extraction": {
+      "customer_name": "Priya Sharma",
+      "phone_number": "917-555-8834",
+      "items": [
+        { "name": "Mini Cupcakes (Vanilla)", "quantity": 12, "notes": "Half of 24 mini cupcakes" },
+        { "name": "Mini Cupcakes (Chocolate)", "quantity": 12, "notes": "Half of 24 mini cupcakes" },
+        { "name": "Mini Cupcakes (Gluten-Free Vanilla)", "quantity": 6, "notes": "GF option" },
+        { "name": "Sugar Cookies", "quantity": 12, "notes": "Blue and pink frosting, star sprinkles" }
+      ],
+      "delivery_address": "Grand Ballroom, 200 Park Lane, Manhattan",
+      "delivery_time": "Sunday 14 June by 11 AM",
+      "special_instructions": "Baby shower theme 'Twinkle Twinkle' - star sprinkles. 6 gluten-free vanilla cupcakes.",
+      "order_date": "11/06/2025",
+      "confidence": "high"
+    }
+  }
+]

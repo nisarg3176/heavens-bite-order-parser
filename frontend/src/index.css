@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream-50 text-bakery-brown font-body antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-bakery {
+    background: linear-gradient(135deg, #FFF8ED 0%, #FFEFD5 50%, #FFE4B8 100%);
+  }
+}

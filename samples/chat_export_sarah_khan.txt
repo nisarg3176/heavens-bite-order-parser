@@ -1,0 +1,15 @@
+[12/06/2025, 09:15:22] Sarah Khan: Hi Heaven's Bite! 👋
+[12/06/2025, 09:15:45] Sarah Khan: I'd like to place an order for tomorrow please
+[12/06/2025, 09:16:10] Heaven's Bite Bakery: Hello Sarah! We'd love to help 😊 What would you like to order?
+[12/06/2025, 09:17:03] Sarah Khan: Can I get:
+- 2 chocolate fudge cupcakes
+- 1 red velvet cake (6 inch)
+- 6 vanilla cookies
+[12/06/2025, 09:18:20] Heaven's Bite Bakery: Perfect! Delivery or pickup?
+[12/06/2025, 09:18:55] Sarah Khan: Delivery please
+[12/06/2025, 09:19:30] Sarah Khan: Address: 42 Maple Street, Apt 3B, Brooklyn NY 11201
+[12/06/2025, 09:20:15] Sarah Khan: Can you deliver by 5 PM tomorrow (Saturday)?
+[12/06/2025, 09:21:00] Heaven's Bite Bakery: Yes, 5 PM works! Anything special we should know?
+[12/06/2025, 09:22:10] Sarah Khan: Yes please - no nuts in the cupcakes (allergy). And write "Happy Birthday Mom!" on the cake in pink icing 🎂
+[12/06/2025, 09:22:45] Sarah Khan: My number is +1 718-555-0142 if you need to call
+[12/06/2025, 09:23:30] Heaven's Bite Bakery: Got it! Order confirmed. Total will be shared shortly. Thank you Sarah! 🧁
