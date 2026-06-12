@@ -70,16 +70,24 @@ export default function UploadSection({
 
           const result = await extractFromText(file)
 
-          // Backend returns the order directly
-          onSuccess(result as any, null)
+console.log('TEXT RESULT:', result)
+
+onSuccess(
+  result.order,
+  result.saved_order_id,
+)
 
         } else if (mode === 'image') {
           setSelectedFiles(fileArray)
 
           const result = await extractFromImages(fileArray)
 
-          // Backend returns the order directly
-          onSuccess(result as any, null)
+console.log('IMAGE RESULT:', result)
+
+onSuccess(
+  result.order,
+  result.saved_order_id,
+)
         }
       } catch (err) {
         onError(err instanceof Error ? err.message : 'Extraction failed')
@@ -102,8 +110,12 @@ export default function UploadSection({
     try {
       const result = await extractFromPaste(pasteText)
 
-      // Backend returns the order directly
-      onSuccess(result as any, null)
+console.log('PASTE RESULT:', result)
+
+onSuccess(
+  result.order,
+  result.saved_order_id,
+)
 
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Extraction failed')
