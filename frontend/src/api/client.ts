@@ -5,7 +5,8 @@ import type {
   Statistics,
 } from '../types'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE =
+  import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -17,8 +18,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
       typeof error.detail === 'string'
         ? error.detail
         : Array.isArray(error.detail)
-          ? error.detail.map((e: { msg: string }) => e.msg).join(', ')
-          : 'Request failed'
+        ? error.detail.map((e: { msg: string }) => e.msg).join(', ')
+        : 'Request failed'
 
     throw new Error(message)
   }
@@ -39,7 +40,7 @@ export async function extractFromText(
   formData.append('file', file)
 
   const res = await fetch(
-    `${API_BASE}/api/extract/chat?save=${save}`,
+    `${API_BASE}/api/orders/extract/text?save=${save}`,
     {
       method: 'POST',
       body: formData,
@@ -53,13 +54,14 @@ export async function extractFromImages(
   files: File[],
   save = true,
 ): Promise<ExtractionResponse> {
-  const file = files[0]
-
   const formData = new FormData()
-  formData.append('file', file)
+
+  files.forEach((file) => {
+    formData.append('files', file)
+  })
 
   const res = await fetch(
-    `${API_BASE}/api/extract/screenshot?save=${save}`,
+    `${API_BASE}/api/orders/extract/images?save=${save}`,
     {
       method: 'POST',
       body: formData,
@@ -74,11 +76,15 @@ export async function extractFromPaste(
   save = true,
 ): Promise<ExtractionResponse> {
   const res = await fetch(
-    `${API_BASE}/api/extract/text?text=${encodeURIComponent(
-      conversation,
-    )}&save=${save}`,
+    `${API_BASE}/api/orders/extract/raw?save=${save}`,
     {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        conversation,
+      }),
     },
   )
 
@@ -86,11 +92,15 @@ export async function extractFromPaste(
 }
 
 export async function fetchStatistics(): Promise<Statistics> {
-  const res = await fetch(`${API_BASE}/api/orders`)
+  const res = await fetch(`${API_BASE}/api/orders/statistics`)
   return handleResponse<Statistics>(res)
 }
 
-export async function fetchOrders(limit = 50): Promise<OrderRecord[]> {
-  const res = await fetch(`${API_BASE}/api/orders?limit=${limit}`)
+export async function fetchOrders(
+  limit = 50,
+): Promise<OrderRecord[]> {
+  const res = await fetch(
+    `${API_BASE}/api/orders?limit=${limit}`,
+  )
   return handleResponse<OrderRecord[]>(res)
 }
