@@ -6,13 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.order import (
     ExtractionResponse,
+    ExtractedOrder,
     OrderResponse,
     RawTextRequest,
     StatisticsResponse,
 )
 from app.services.ai_extractor import extract_order_from_images, extract_order_from_text
 from app.services.chat_parser import extract_customer_hint, format_messages_for_ai, parse_whatsapp_export
-from app.services.order_service import get_all_orders, get_order_by_id, get_statistics, save_order
+from app.services.order_service import (
+    get_all_orders,
+    get_order_by_id,
+    get_statistics,
+    save_order,
+    delete_order,
+    update_order,
+)
 from app.config import Settings, get_settings
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])
@@ -165,3 +173,45 @@ async def get_order(order_id: int, db: AsyncSession = Depends(get_db)) -> OrderR
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
+
+
+@router.delete("/{order_id}")
+async def remove_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete a saved order."""
+    deleted = await delete_order(db, order_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found",
+        )
+
+    return {
+        "success": True,
+        "message": "Order deleted successfully",
+    }
+
+@router.put("/{order_id}", response_model=OrderResponse)
+async def edit_order(
+    order_id: int,
+    order: ExtractedOrder,
+    db: AsyncSession = Depends(get_db),
+):
+    """Edit existing order."""
+
+    updated = await update_order(
+        db,
+        order_id,
+        order,
+    )
+
+    if not updated:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found",
+        )
+
+    return updated

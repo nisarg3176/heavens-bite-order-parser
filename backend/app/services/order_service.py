@@ -72,6 +72,54 @@ async def get_order_by_id(db: AsyncSession, order_id: int) -> OrderResponse | No
     record = result.scalar_one_or_none()
     return _record_to_response(record) if record else None
 
+async def delete_order(
+    db: AsyncSession,
+    order_id: int,
+) -> bool:
+    result = await db.execute(
+        select(OrderRecord).where(OrderRecord.id == order_id)
+    )
+    record = result.scalar_one_or_none()
+
+    if not record:
+        return False
+
+    await db.delete(record)
+    return True
+
+async def update_order(
+    db: AsyncSession,
+    order_id: int,
+    order: ExtractedOrder,
+) -> OrderResponse | None:
+    """Update existing order."""
+
+    result = await db.execute(
+        select(OrderRecord).where(OrderRecord.id == order_id)
+    )
+
+    record = result.scalar_one_or_none()
+
+    if not record:
+        return None
+
+    record.customer_name = order.customer_name
+    record.phone_number = order.phone_number
+    record.items_json = json.dumps(
+        [item.model_dump() for item in order.items]
+    )
+    record.delivery_address = order.delivery_address
+    record.delivery_time = order.delivery_time
+    record.special_instructions = order.special_instructions
+    record.order_date = order.order_date
+    record.confidence = order.confidence
+    record.raw_summary = order.raw_summary
+
+    await db.flush()
+    await db.refresh(record)
+
+    return _record_to_response(record)
+
 
 async def get_statistics(db: AsyncSession) -> StatisticsResponse:
     """Compute aggregate statistics across all saved orders."""
