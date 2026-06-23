@@ -104,3 +104,29 @@ export async function fetchOrders(
   )
   return handleResponse<OrderRecord[]>(res)
 }
+
+export async function deleteOrder(id: number) {
+  const response = await fetch(`${API_BASE}/api/orders/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete order')
+  }
+}
+
+export async function updateOrder(id: number, order: any) {
+  const response = await fetch(`${API_BASE}/api/orders/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(order),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update order')
+  }
+
+  return response.json()
+}

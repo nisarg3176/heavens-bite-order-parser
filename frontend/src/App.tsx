@@ -108,7 +108,10 @@ function App() {
 
         <StatisticsPanel statistics={statistics} loading={!statistics} />
 
-        <OrderHistory recentOrders={statistics?.recent_orders ?? []} />
+        <OrderHistory
+  recentOrders={statistics?.recent_orders ?? []}
+  onRefresh={loadStatistics}
+/>
 
         <footer className="text-center py-8 text-bakery-brown/50 text-sm">
           <div className="flex items-center justify-center gap-2 mb-2">
