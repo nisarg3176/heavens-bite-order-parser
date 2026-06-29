@@ -13,10 +13,14 @@ import StatisticsPanel from './components/StatisticsPanel'
 import OrderHistory from './components/OrderHistory'
 import type { ExtractedOrder, Statistics, UploadMode } from './types'
 
+interface ExtractedEntry {
+  order: ExtractedOrder
+  savedId: number | null
+}
+
 function App() {
   const [mode, setMode] = useState<UploadMode>('text')
-  const [extractedOrder, setExtractedOrder] = useState<ExtractedOrder | null>(null)
-  const [savedOrderId, setSavedOrderId] = useState<number | null>(null)
+  const [extractedOrders, setExtractedOrders] = useState<ExtractedEntry[]>([])
   const [statistics, setStatistics] = useState<Statistics | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -39,10 +43,13 @@ function App() {
   }, [])
 
   const handleExtractSuccess = (order: ExtractedOrder, orderId?: number | null) => {
-    setExtractedOrder(order)
-    setSavedOrderId(orderId ?? null)
+    setExtractedOrders((prev) => [...prev, { order, savedId: orderId ?? null }])
     setError(null)
     loadStatistics()
+  }
+
+  const handleResetResults = () => {
+    setExtractedOrders([])
   }
 
   return (
@@ -72,7 +79,7 @@ function App() {
             Turn chats into bakery orders
           </h2>
           <p className="text-bakery-brown/70 leading-relaxed">
-            Upload an exported WhatsApp chat, paste a conversation, or drop screenshots.
+            Upload one or more exported WhatsApp chats, paste a conversation, or drop screenshots.
             Our AI extracts customer details, items, delivery info, and special instructions instantly.
           </p>
         </section>
@@ -83,6 +90,7 @@ function App() {
           loading={loading}
           onLoadingChange={setLoading}
           onSuccess={handleExtractSuccess}
+          onResetResults={handleResetResults}
           onError={setError}
         />
 
@@ -93,16 +101,28 @@ function App() {
           </div>
         )}
 
-        {extractedOrder && (
-          <div className="space-y-3 animate-in fade-in">
+        {extractedOrders.length > 0 && (
+          <div className="space-y-4 animate-in fade-in">
             <div className="flex items-center gap-2 text-bakery-sage">
               <CheckCircle2 className="w-5 h-5" />
               <span className="font-medium">
-                Order extracted successfully
-                {savedOrderId ? ` · Saved as #${savedOrderId}` : ''}
+                {extractedOrders.length === 1
+                  ? 'Order extracted successfully'
+                  : `${extractedOrders.length} orders extracted successfully`}
               </span>
             </div>
-            <OrderResult order={extractedOrder} />
+
+            {extractedOrders.map((entry, i) => (
+              <div key={i} className="space-y-2">
+                {extractedOrders.length > 1 && (
+                  <p className="text-sm font-medium text-bakery-brown/70">
+                    Order {i + 1}
+                    {entry.savedId ? ` · Saved as #${entry.savedId}` : ''}
+                  </p>
+                )}
+                <OrderResult order={entry.order} />
+              </div>
+            ))}
           </div>
         )}
 

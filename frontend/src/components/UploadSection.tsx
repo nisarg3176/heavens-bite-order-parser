@@ -15,6 +15,7 @@ interface Props {
   loading: boolean
   onLoadingChange: (loading: boolean) => void
   onSuccess: (order: ExtractedOrder, savedId?: number | null) => void
+  onResetResults: () => void
   onError: (error: string | null) => void
 }
 
@@ -23,7 +24,7 @@ const MODES: { id: UploadMode; label: string; icon: typeof FileText; hint: strin
     id: 'text',
     label: 'Chat Export',
     icon: FileText,
-    hint: 'Upload WhatsApp .txt export',
+    hint: 'Upload one or more WhatsApp .txt exports',
   },
   {
     id: 'image',
@@ -45,6 +46,7 @@ export default function UploadSection({
   loading,
   onLoadingChange,
   onSuccess,
+  onResetResults,
   onError,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -59,35 +61,41 @@ export default function UploadSection({
 
       onLoadingChange(true)
       onError(null)
+      onResetResults()
 
       try {
         if (mode === 'text') {
-          const file = fileArray[0]
+          const txtFiles = fileArray.filter((f) =>
+            f.name.toLowerCase().endsWith('.txt'),
+          )
 
-          if (!file.name.toLowerCase().endsWith('.txt')) {
-            throw new Error('Please upload a .txt WhatsApp export file')
+          if (!txtFiles.length) {
+            throw new Error('Please upload one or more .txt WhatsApp export files')
           }
 
-          const result = await extractFromText(file)
+          setSelectedFiles(txtFiles)
 
-console.log('TEXT RESULT:', result)
+          const errors: string[] = []
 
-onSuccess(
-  result.order,
-  result.saved_order_id,
-)
+          for (const file of txtFiles) {
+            try {
+              const result = await extractFromText(file)
+              onSuccess(result.order, result.saved_order_id)
+            } catch (err) {
+              errors.push(
+                `${file.name}: ${err instanceof Error ? err.message : 'failed'}`,
+              )
+            }
+          }
 
+          if (errors.length) {
+            onError(`Some files failed — ${errors.join('; ')}`)
+          }
         } else if (mode === 'image') {
           setSelectedFiles(fileArray)
 
           const result = await extractFromImages(fileArray)
-
-console.log('IMAGE RESULT:', result)
-
-onSuccess(
-  result.order,
-  result.saved_order_id,
-)
+          onSuccess(result.order, result.saved_order_id)
         }
       } catch (err) {
         onError(err instanceof Error ? err.message : 'Extraction failed')
@@ -95,7 +103,7 @@ onSuccess(
         onLoadingChange(false)
       }
     },
-    [mode, onError, onLoadingChange, onSuccess],
+    [mode, onError, onLoadingChange, onResetResults, onSuccess],
   )
 
   const handlePasteSubmit = async () => {
@@ -106,17 +114,11 @@ onSuccess(
 
     onLoadingChange(true)
     onError(null)
+    onResetResults()
 
     try {
       const result = await extractFromPaste(pasteText)
-
-console.log('PASTE RESULT:', result)
-
-onSuccess(
-  result.order,
-  result.saved_order_id,
-)
-
+      onSuccess(result.order, result.saved_order_id)
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Extraction failed')
     } finally {
@@ -204,7 +206,7 @@ onSuccess(
             type="file"
             className="hidden"
             accept={mode === 'text' ? '.txt' : 'image/*'}
-            multiple={mode === 'image'}
+            multiple={mode === 'image' || mode === 'text'}
             onChange={(e) => e.target.files && processFiles(e.target.files)}
           />
 
@@ -226,7 +228,7 @@ onSuccess(
                 </div>
 
                 <p className="font-medium text-bakery-brown">
-                  Drop {mode === 'text' ? 'your .txt export' : 'screenshot(s)'} here or click to browse
+                  Drop {mode === 'text' ? 'your .txt export(s)' : 'screenshot(s)'} here or click to browse
                 </p>
 
                 <p className="text-sm text-bakery-brown/60">
