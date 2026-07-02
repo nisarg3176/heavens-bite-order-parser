@@ -10,105 +10,87 @@ function StatCard({
   icon: Icon,
   label,
   value,
-  accent,
+  gradient,
 }: {
   icon: typeof Package
   label: string
   value: number | string
-  accent: string
+  gradient: string
 }) {
   return (
-    <div className="bg-white/80 backdrop-blur rounded-2xl p-5 border border-white shadow-soft">
-      <div className={`w-10 h-10 rounded-xl ${accent} flex items-center justify-center mb-3`}>
-        <Icon className="w-5 h-5 text-white" />
+    <div className="hover-lift glass rounded-3xl p-6 shadow-glass hover:shadow-card">
+      <div className={`w-12 h-12 rounded-2xl ${gradient} flex items-center justify-center mb-4 ring-1 ring-white/60 shadow-soft`}>
+        <Icon className="w-5 h-5 text-white" strokeWidth={2.2} />
       </div>
-      <p className="text-2xl font-display font-bold text-bakery-brown">{value}</p>
-      <p className="text-sm text-bakery-brown/60 mt-1">{label}</p>
+      <p className="text-4xl font-display font-800 text-ink leading-none">{value}</p>
+      <p className="text-sm text-ink-soft mt-2">{label}</p>
+    </div>
+  )
+}
+
+function StatSkeleton() {
+  return (
+    <div className="glass rounded-3xl p-6 shadow-glass">
+      <div className="skeleton w-12 h-12 rounded-2xl mb-4" />
+      <div className="skeleton h-9 w-20 rounded-xl" />
+      <div className="skeleton h-4 w-28 rounded-lg mt-3" />
     </div>
   )
 }
 
 export default function StatisticsPanel({ statistics, loading }: Props) {
   const mostOrderedItems = statistics?.most_ordered_items ?? []
-
-  const maxQty =
-    mostOrderedItems.length > 0
-      ? mostOrderedItems[0]?.total_quantity ?? 1
-      : 1
+  const maxQty = mostOrderedItems.length > 0 ? mostOrderedItems[0]?.total_quantity ?? 1 : 1
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center gap-2">
-        <BarChart3 className="w-5 h-5 text-bakery-gold" />
-        <h3 className="font-display text-xl font-bold text-bakery-brown">
-          Bakery Statistics
-        </h3>
+    <section className="space-y-5">
+      <div className="flex items-center gap-2.5">
+        <span className="w-9 h-9 rounded-2xl bg-gradient-sage flex items-center justify-center ring-1 ring-white/60">
+          <BarChart3 className="w-5 h-5 text-white" strokeWidth={2.2} />
+        </span>
+        <h3 className="font-display text-2xl font-700 text-ink">Bakery Statistics</h3>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Package}
-          label="Total Orders"
-          value={loading ? '—' : statistics?.total_orders ?? 0}
-          accent="bg-bakery-gold"
-        />
-
-        <StatCard
-          icon={TrendingUp}
-          label="Items Sold"
-          value={loading ? '—' : statistics?.total_items_sold ?? 0}
-          accent="bg-bakery-rose"
-        />
-
-        <StatCard
-          icon={Users}
-          label="Unique Customers"
-          value={loading ? '—' : statistics?.unique_customers ?? 0}
-          accent="bg-bakery-sage"
-        />
-
-        <StatCard
-          icon={BarChart3}
-          label="Top Item (qty)"
-          value={
-            loading
-              ? '—'
-              : mostOrderedItems[0]?.total_quantity ?? 0
-          }
-          accent="bg-bakery-brown"
-        />
-      </div>
+      {loading ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard icon={Package} label="Total Orders" value={statistics?.total_orders ?? 0} gradient="bg-gradient-peach" />
+          <StatCard icon={TrendingUp} label="Items Sold" value={statistics?.total_items_sold ?? 0} gradient="bg-gradient-to-br from-pink to-pink-deep" />
+          <StatCard icon={Users} label="Unique Customers" value={statistics?.unique_customers ?? 0} gradient="bg-gradient-sage" />
+          <StatCard icon={BarChart3} label="Top Item (qty)" value={mostOrderedItems[0]?.total_quantity ?? 0} gradient="bg-gradient-to-br from-peach-deep to-pink-deep" />
+        </div>
+      )}
 
       {!loading && mostOrderedItems.length > 0 && (
-        <div className="bg-white/80 backdrop-blur rounded-2xl p-6 border border-white shadow-soft">
-          <h4 className="font-semibold text-bakery-brown mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-bakery-gold" />
+        <div className="glass rounded-3xl p-6 md:p-7 shadow-glass">
+          <h4 className="font-display font-700 text-ink mb-5 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-pink-deep" />
             Most Ordered Items
           </h4>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {mostOrderedItems.map((item, idx) => (
               <div key={item.item_name} className="flex items-center gap-4">
-                <span className="w-6 text-sm font-bold text-bakery-brown/40">
-                  #{idx + 1}
+                <span className="w-7 h-7 rounded-full bg-cream-200/80 flex items-center justify-center font-display text-xs font-700 text-pink-deep shrink-0">
+                  {idx + 1}
                 </span>
-
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-1 gap-2">
-                    <span className="font-medium text-bakery-brown truncate">
-                      {item.item_name}
-                    </span>
-
-                    <span className="text-sm text-bakery-brown/60 shrink-0">
+                  <div className="flex justify-between items-baseline mb-1.5 gap-2">
+                    <span className="font-500 text-ink truncate">{item.item_name}</span>
+                    <span className="text-sm text-ink-soft shrink-0">
                       {item.total_quantity} sold · {item.order_count} orders
                     </span>
                   </div>
-
-                  <div className="h-2 rounded-full bg-cream-200 overflow-hidden">
+                  <div className="h-2.5 rounded-full bg-cream-200/80 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-bakery-gold to-bakery-rose transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-peach origin-left"
                       style={{
                         width: `${(item.total_quantity / maxQty) * 100}%`,
+                        animation: 'grow-x 0.9s cubic-bezier(0.22,1,0.36,1) both',
+                        animationDelay: `${idx * 0.09}s`,
                       }}
                     />
                   </div>
@@ -120,9 +102,13 @@ export default function StatisticsPanel({ statistics, loading }: Props) {
       )}
 
       {!loading && (statistics?.total_orders ?? 0) === 0 && (
-        <p className="text-center text-sm text-bakery-brown/50 py-4">
-          Upload your first order to see statistics here.
-        </p>
+        <div className="glass rounded-3xl px-6 py-12 text-center shadow-glass">
+          <div className="w-14 h-14 mx-auto rounded-3xl bg-gradient-dawn flex items-center justify-center mb-4 ring-1 ring-white/60">
+            <Package className="w-6 h-6 text-pink-deep" strokeWidth={2} />
+          </div>
+          <p className="font-display font-600 text-ink">No orders yet</p>
+          <p className="text-sm text-ink-soft mt-1">Upload your first conversation to see statistics bloom here.</p>
+        </div>
       )}
     </section>
   )

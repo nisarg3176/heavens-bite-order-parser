@@ -8,6 +8,10 @@ import {
   FileText,
   Trash2,
   Pencil,
+  Search,
+  MapPin,
+  Clock,
+  Phone,
 } from 'lucide-react'
 
 import {
@@ -67,175 +71,166 @@ const handleSave = async () => {
   }
 }
 
+  const modalInput =
+    'w-full border border-white/70 bg-ivory/70 shadow-inset px-4 py-3 rounded-2xl mb-3 focus:outline-none focus:ring-2 focus:ring-pink/40 focus:bg-ivory transition-all'
+
+  const filtered = recentOrders.filter((order) =>
+    (order.customer_name ?? '').toLowerCase().includes(search.toLowerCase()),
+  )
+
   return (
-    <section className="bg-white/60 backdrop-blur rounded-3xl p-6 border border-white shadow-soft">
-      <div className="flex items-center gap-2 mb-4">
-        <History className="w-5 h-5 text-bakery-gold" />
-        <h3 className="font-display text-xl font-bold text-bakery-brown">Recent Orders</h3>
+    <section className="glass rounded-4xl p-6 md:p-8 shadow-glass">
+      <div className="flex items-center gap-2.5 mb-5">
+        <span className="w-9 h-9 rounded-2xl bg-gradient-peach flex items-center justify-center ring-1 ring-white/60">
+          <History className="w-5 h-5 text-white" strokeWidth={2.2} />
+        </span>
+        <h3 className="font-display text-2xl font-700 text-ink">Recent Orders</h3>
       </div>
 
-<input
-  type="text"
-  placeholder="Search customer..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="w-full border rounded-xl px-3 py-2 mb-4"
-/>
+      <div className="relative mb-5">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint" />
+        <input
+          type="text"
+          placeholder="Search customer..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full border border-white/70 bg-ivory/60 rounded-full pl-11 pr-4 py-3 shadow-inset focus:outline-none focus:ring-2 focus:ring-pink/40 focus:bg-ivory transition-all"
+        />
+      </div>
 
-      <div className="space-y-3">
-        {recentOrders
-  .filter((order) =>
-    (order.customer_name ?? '')
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  )
-  .map((order) => (
+      <div className="grid sm:grid-cols-2 gap-3.5">
+        {filtered.map((order) => (
           <div
             key={order.id}
-            className="flex flex-wrap items-start justify-between gap-3 p-4 rounded-2xl bg-cream-50 border border-cream-200"
+            className="hover-lift flex flex-col gap-3 p-5 rounded-3xl bg-ivory/70 border border-white/70 shadow-soft hover:shadow-card"
           >
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-mono text-bakery-brown/40">#{order.id}</span>
-                {order.source_type === 'image' ? (
-                  <ImageIcon className="w-3.5 h-3.5 text-bakery-brown/40" />
-                ) : (
-                  <FileText className="w-3.5 h-3.5 text-bakery-brown/40" />
-                )}
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xs font-mono text-ink-faint">#{order.id}</span>
+                  <span className={`inline-flex items-center gap-1 text-[0.65rem] font-500 px-2 py-0.5 rounded-full ${
+                    order.source_type === 'image'
+                      ? 'bg-pink-soft/60 text-pink-deep'
+                      : 'bg-sage-soft/60 text-sage-deep'
+                  }`}>
+                    {order.source_type === 'image' ? <ImageIcon className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                    {order.source_type === 'image' ? 'Screenshot' : 'Chat export'}
+                  </span>
+                </div>
+                <p className="font-600 text-ink truncate">
+                  {order.customer_name || 'Unknown Customer'}
+                </p>
+                <p className="text-sm text-ink-soft mt-0.5 line-clamp-2">
+                  {order.items.map((i) => `${i.quantity}× ${i.name}`).join(', ') || 'No items'}
+                </p>
               </div>
-              <p className="font-medium text-bakery-brown">
-                {order.customer_name || 'Unknown Customer'}
-              </p>
-              <p className="text-sm text-bakery-brown/60 mt-0.5 truncate">
-                {order.items.map((i) => `${i.quantity}× ${i.name}`).join(', ') || 'No items'}
-              </p>
+
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={() => setEditingOrder(order)}
+                  className="p-2.5 rounded-2xl bg-white/80 border border-white text-pink-deep hover:bg-cream-100 hover:-translate-y-0.5 transition-all"
+                  title="Edit"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDelete(order.id)}
+                  className="p-2.5 rounded-2xl bg-pink-soft/40 border border-pink/30 text-pink-deep hover:bg-pink-soft/70 hover:-translate-y-0.5 transition-all"
+                  title="Delete"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-<div className="text-right text-sm text-bakery-brown/50 shrink-0">
-  <div className="flex gap-2 justify-end mb-2">
-    <button
-  onClick={() => setEditingOrder(order)}
-  className="p-2 rounded-lg bg-white border"
-  title="Edit"
->
-  <Pencil className="w-4 h-4" />
-</button>
 
-    <button
-      onClick={() => handleDelete(order.id)}
-      className="p-2 rounded-lg bg-red-50 border border-red-200"
-      title="Delete"
-    >
-      <Trash2 className="w-4 h-4 text-red-600" />
-    </button>
-  </div>
-
-  <p>{order.order_date || '—'}</p>
-
-  {order.phone_number && (
-  <p className="text-xs">
-    {order.phone_number}
-  </p>
-)}
-
-{order.delivery_address && (
-  <p className="text-xs">
-    {order.delivery_address}
-  </p>
-)}
-
-  {order.delivery_time && (
-    <p className="text-xs mt-0.5">
-      {order.delivery_time}
-    </p>
-  )}
-</div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-faint pt-1 border-t border-cream-200/70">
+              <span>{order.order_date || '—'}</span>
+              {order.phone_number && (
+                <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3" />{order.phone_number}</span>
+              )}
+              {order.delivery_time && (
+                <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" />{order.delivery_time}</span>
+              )}
+              {order.delivery_address && (
+                <span className="inline-flex items-center gap-1 min-w-0 max-w-full truncate"><MapPin className="w-3 h-3 shrink-0" />{order.delivery_address}</span>
+              )}
+            </div>
           </div>
         ))}
       </div>
+
+      {filtered.length === 0 && (
+        <p className="text-center text-sm text-ink-faint py-8">
+          No orders match “{search}”.
+        </p>
+      )}
+
       {editingOrder && (
-  <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-2xl w-full max-w-md">
-      <h3 className="text-lg font-bold mb-4">
-        Edit Order #{editingOrder.id}
-      </h3>
+        <div className="fixed inset-0 bg-ink/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="glass rounded-4xl p-6 md:p-7 w-full max-w-md shadow-card animate-pop-in">
+            <h3 className="font-display text-xl font-700 text-ink mb-5">
+              Edit Order #{editingOrder.id}
+            </h3>
 
-      <input
-  className="w-full border p-2 rounded mb-3"
-  placeholder="Customer Name"
-  value={editingOrder.customer_name ?? ''}
-        onChange={(e) =>
-          setEditingOrder({
-            ...editingOrder,
-            customer_name: e.target.value,
-          })
-        }
-      />
-      <input
-  className="w-full border p-2 rounded mb-3"
-  placeholder="Phone Number"
-  value={editingOrder.phone_number ?? ''}
-  onChange={(e) =>
-    setEditingOrder({
-      ...editingOrder,
-      phone_number: e.target.value,
-    })
-  }
-/>
+            <input
+              className={modalInput}
+              placeholder="Customer Name"
+              value={editingOrder.customer_name ?? ''}
+              onChange={(e) =>
+                setEditingOrder({ ...editingOrder, customer_name: e.target.value })
+              }
+            />
+            <input
+              className={modalInput}
+              placeholder="Phone Number"
+              value={editingOrder.phone_number ?? ''}
+              onChange={(e) =>
+                setEditingOrder({ ...editingOrder, phone_number: e.target.value })
+              }
+            />
+            <input
+              className={modalInput}
+              placeholder="Delivery Address"
+              value={editingOrder.delivery_address ?? ''}
+              onChange={(e) =>
+                setEditingOrder({ ...editingOrder, delivery_address: e.target.value })
+              }
+            />
+            <input
+              className={modalInput}
+              placeholder="Delivery Time"
+              value={editingOrder.delivery_time ?? ''}
+              onChange={(e) =>
+                setEditingOrder({ ...editingOrder, delivery_time: e.target.value })
+              }
+            />
+            <textarea
+              rows={3}
+              className={`${modalInput} resize-y`}
+              placeholder="Special Instructions"
+              value={editingOrder.special_instructions ?? ''}
+              onChange={(e) =>
+                setEditingOrder({ ...editingOrder, special_instructions: e.target.value })
+              }
+            />
 
-<input
-  className="w-full border p-2 rounded mb-3"
-  placeholder="Delivery Address"
-  value={editingOrder.delivery_address ?? ''}
-  onChange={(e) =>
-    setEditingOrder({
-      ...editingOrder,
-      delivery_address: e.target.value,
-    })
-  }
-/>
-
-<input
-  className="w-full border p-2 rounded mb-3"
-  placeholder="Delivery Time"
-  value={editingOrder.delivery_time ?? ''}
-  onChange={(e) =>
-    setEditingOrder({
-      ...editingOrder,
-      delivery_time: e.target.value,
-    })
-  }
-/>
-
-<textarea
-  rows={3}
-  className="w-full border p-2 rounded mb-3"
-  placeholder="Special Instructions"
-  value={editingOrder.special_instructions ?? ''}
-  onChange={(e) =>
-    setEditingOrder({
-      ...editingOrder,
-      special_instructions: e.target.value,
-    })
-  }
-/>
-      <div className="flex gap-2">
-        <button
-        onClick={handleSave}
-          className="bg-green-600 text-white px-4 py-2 rounded"
-        >
-          Save
-        </button>
-
-        <button
-          onClick={() => setEditingOrder(null)}
-          className="border px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={handleSave}
+                className="btn-gradient text-white font-600 px-6 py-3 rounded-full shadow-lift hover:-translate-y-0.5 transition-all"
+              >
+                Save changes
+              </button>
+              <button
+                onClick={() => setEditingOrder(null)}
+                className="border border-white/70 bg-ivory/60 text-ink-soft px-6 py-3 rounded-full hover:bg-cream-100 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

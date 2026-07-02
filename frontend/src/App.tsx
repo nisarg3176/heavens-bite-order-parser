@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   AlertCircle,
   CheckCircle2,
-  ChefHat,
+  Croissant,
   Sparkles,
 } from 'lucide-react'
 import { checkHealth, fetchStatistics } from './api/client'
@@ -16,6 +16,38 @@ import type { ExtractedOrder, Statistics, UploadMode } from './types'
 interface ExtractedEntry {
   order: ExtractedOrder
   savedId: number | null
+}
+
+function BackgroundDecor() {
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden>
+      <div className="absolute inset-0 bg-petals" />
+      <div className="blob w-[26rem] h-[26rem] bg-peach/40 -top-24 -left-24 animate-float" />
+      <div className="blob w-[22rem] h-[22rem] bg-pink/30 top-1/3 -right-28 animate-float-slow" />
+      <div className="blob w-[24rem] h-[24rem] bg-sage-soft/50 -bottom-28 left-1/4 animate-float" style={{ animationDelay: '3s' }} />
+    </div>
+  )
+}
+
+function WaveDivider({ flip = false, className = '' }: { flip?: boolean; className?: string }) {
+  return (
+    <div className={`w-full leading-none ${className}`} aria-hidden>
+      <svg
+        viewBox="0 0 1440 90"
+        preserveAspectRatio="none"
+        className={`w-full h-12 md:h-16 ${flip ? 'rotate-180' : ''}`}
+      >
+        <path
+          d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,45 L1440,90 L0,90 Z"
+          fill="rgba(255,253,249,0.55)"
+        />
+        <path
+          d="M0,55 C260,95 520,25 780,50 C1040,75 1240,35 1440,60 L1440,90 L0,90 Z"
+          fill="rgba(248,220,200,0.35)"
+        />
+      </svg>
+    </div>
+  )
 }
 
 function App() {
@@ -53,32 +85,34 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen gradient-bakery">
+    <div className="min-h-screen relative">
+      <BackgroundDecor />
       <Header />
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12 reveal">
         {aiConfigured === false && (
-          <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-3xl glass border border-peach/40 text-ink shadow-soft">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-peach-deep" />
             <div>
-              <p className="font-semibold">AI API key not configured</p>
-              <p className="text-sm mt-1 opacity-90">
-                Copy <code className="bg-amber-100 px-1 rounded">backend/.env.example</code> to{' '}
-                <code className="bg-amber-100 px-1 rounded">backend/.env</code> and add your Gemini or OpenAI key.
+              <p className="font-600">AI API key not configured</p>
+              <p className="text-sm mt-1 text-ink-soft">
+                Copy <code className="bg-cream-200 px-1.5 py-0.5 rounded-md">backend/.env.example</code> to{' '}
+                <code className="bg-cream-200 px-1.5 py-0.5 rounded-md">backend/.env</code> and add your Gemini or OpenAI key.
               </p>
             </div>
           </div>
         )}
 
-        <section className="text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 border border-bakery-gold/30 text-sm text-bakery-brown mb-4">
-            <Sparkles className="w-4 h-4 text-bakery-gold" />
+        <section className="relative text-center max-w-2xl mx-auto pt-4 pb-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-pink-deep mb-6 shadow-soft">
+            <Sparkles className="w-4 h-4 text-peach-deep" />
             WhatsApp → Structured Orders
           </div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-bakery-brown mb-3">
-            Turn chats into bakery orders
+          <p className="font-display italic text-xl text-pink-deep mb-2">handcrafted order-keeping,</p>
+          <h2 className="font-display text-4xl md:text-[3.4rem] font-800 text-ink leading-[1.04] mb-5">
+            Turn chats into <span className="text-gradient">bakery orders</span>
           </h2>
-          <p className="text-bakery-brown/70 leading-relaxed">
+          <p className="text-ink-soft leading-relaxed max-w-xl mx-auto">
             Upload one or more exported WhatsApp chats, paste a conversation, or drop screenshots.
             Our AI extracts customer details, items, delivery info, and special instructions instantly.
           </p>
@@ -95,17 +129,17 @@ function App() {
         />
 
         {error && (
-          <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800">
+          <div className="flex items-start gap-3 p-4 rounded-3xl glass border border-pink/40 text-pink-deep shadow-soft animate-pop-in">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
             <p>{error}</p>
           </div>
         )}
 
         {extractedOrders.length > 0 && (
-          <div className="space-y-4 animate-in fade-in">
-            <div className="flex items-center gap-2 text-bakery-sage">
+          <div className="space-y-5">
+            <div className="flex items-center gap-2 text-sage-deep font-600 animate-pop-in">
               <CheckCircle2 className="w-5 h-5" />
-              <span className="font-medium">
+              <span>
                 {extractedOrders.length === 1
                   ? 'Order extracted successfully'
                   : `${extractedOrders.length} orders extracted successfully`}
@@ -115,7 +149,7 @@ function App() {
             {extractedOrders.map((entry, i) => (
               <div key={i} className="space-y-2">
                 {extractedOrders.length > 1 && (
-                  <p className="text-sm font-medium text-bakery-brown/70">
+                  <p className="font-display text-sm font-600 text-pink-deep">
                     Order {i + 1}
                     {entry.savedId ? ` · Saved as #${entry.savedId}` : ''}
                   </p>
@@ -126,6 +160,8 @@ function App() {
           </div>
         )}
 
+        <WaveDivider className="opacity-90" />
+
         <StatisticsPanel statistics={statistics} loading={!statistics} />
 
         <OrderHistory
@@ -133,10 +169,12 @@ function App() {
   onRefresh={loadStatistics}
 />
 
-        <footer className="text-center py-8 text-bakery-brown/50 text-sm">
+        <footer className="text-center pt-6 pb-10 text-ink-faint text-sm">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <ChefHat className="w-4 h-4" />
-            <span>Heaven&apos;s Bite Bakery — Order Extractor POC</span>
+            <Croissant className="w-4 h-4 text-peach-deep" />
+            <span className="font-display font-600 text-ink-soft">
+              Heaven&apos;s Bite Bakery — Order Extractor POC
+            </span>
           </div>
           <p>Built for student demonstration · FastAPI + React + Gemini AI</p>
         </footer>

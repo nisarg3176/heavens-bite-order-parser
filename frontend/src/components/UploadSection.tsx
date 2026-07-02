@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from 'react'
 import {
   FileText,
   ImageIcon,
-  Loader2,
   MessageSquareText,
   Upload,
 } from 'lucide-react'
@@ -20,25 +19,20 @@ interface Props {
 }
 
 const MODES: { id: UploadMode; label: string; icon: typeof FileText; hint: string }[] = [
-  {
-    id: 'text',
-    label: 'Chat Export',
-    icon: FileText,
-    hint: 'Upload one or more WhatsApp .txt exports',
-  },
-  {
-    id: 'image',
-    label: 'Screenshots',
-    icon: ImageIcon,
-    hint: 'Upload chat screenshot images',
-  },
-  {
-    id: 'paste',
-    label: 'Paste Text',
-    icon: MessageSquareText,
-    hint: 'Paste conversation directly',
-  },
+  { id: 'text', label: 'Chat Export', icon: FileText, hint: 'Upload one or more WhatsApp .txt exports' },
+  { id: 'image', label: 'Screenshots', icon: ImageIcon, hint: 'Upload chat screenshot images' },
+  { id: 'paste', label: 'Paste Text', icon: MessageSquareText, hint: 'Paste conversation directly' },
 ]
+
+function SoftLoader() {
+  return (
+    <span className="inline-flex items-center gap-1.5" aria-hidden>
+      <span className="w-2.5 h-2.5 rounded-full bg-current animate-pulse-soft" />
+      <span className="w-2.5 h-2.5 rounded-full bg-current animate-pulse-soft" style={{ animationDelay: '0.2s' }} />
+      <span className="w-2.5 h-2.5 rounded-full bg-current animate-pulse-soft" style={{ animationDelay: '0.4s' }} />
+    </span>
+  )
+}
 
 export default function UploadSection({
   mode,
@@ -136,8 +130,10 @@ export default function UploadSection({
   }
 
   return (
-    <section className="bg-white/80 backdrop-blur rounded-3xl shadow-card border border-white p-6 md:p-8">
-      <div className="flex flex-wrap gap-2 mb-6">
+    <section className="glass rounded-4xl shadow-glass p-6 md:p-9 relative overflow-hidden">
+      <div className="absolute -top-24 -right-20 w-56 h-56 rounded-full bg-peach/25 blur-3xl pointer-events-none" />
+
+      <div className="relative flex flex-wrap gap-2 mb-7 p-1.5 rounded-full bg-cream-100/70 w-fit">
         {MODES.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -147,10 +143,10 @@ export default function UploadSection({
               setSelectedFiles([])
               onError(null)
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-600 transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink/60 ${
               mode === id
-                ? 'bg-bakery-brown text-white shadow-soft'
-                : 'bg-cream-100 text-bakery-brown/70 hover:bg-cream-200'
+                ? 'bg-ivory text-ink shadow-soft'
+                : 'text-ink-soft hover:text-ink'
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -160,7 +156,7 @@ export default function UploadSection({
       </div>
 
       {mode === 'paste' ? (
-        <div className="space-y-4">
+        <div className="relative space-y-4">
           <textarea
             value={pasteText}
             onChange={(e) => setPasteText(e.target.value)}
@@ -169,20 +165,16 @@ export default function UploadSection({
 [12/06/2025, 10:30:15] Sarah Khan: Hi! I'd like to order 2 chocolate cupcakes
 [12/06/2025, 10:31:02] Heaven's Bite Bakery: Sure! Delivery address?`}
             rows={10}
-            className="w-full px-4 py-3 rounded-2xl border border-bakery-gold/30 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-bakery-gold/50 resize-y text-sm font-mono"
+            className="w-full px-5 py-4 rounded-3xl border border-white/70 bg-ivory/70 shadow-inset focus:outline-none focus:ring-2 focus:ring-pink/40 focus:bg-ivory resize-y text-sm font-mono transition-all"
           />
 
           <button
             type="button"
             onClick={handlePasteSubmit}
             disabled={loading}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-bakery-brown text-white font-medium hover:bg-bakery-brown/90 disabled:opacity-60 transition-colors"
+            className="btn-gradient w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full text-white font-600 shadow-lift hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink/60"
           >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Upload className="w-5 h-5" />
-            )}
+            {loading ? <SoftLoader /> : <Upload className="w-5 h-5" />}
             Extract Order
           </button>
         </div>
@@ -195,12 +187,13 @@ export default function UploadSection({
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
+          className={`group relative rounded-4xl p-12 text-center cursor-pointer transition-all duration-500 overflow-hidden border ${
             dragOver
-              ? 'border-bakery-gold bg-cream-100 scale-[1.01]'
-              : 'border-bakery-gold/40 hover:border-bakery-gold hover:bg-cream-50'
+              ? 'border-pink bg-pink-soft/30 scale-[1.01] shadow-soft'
+              : 'border-dashed border-peach/50 bg-ivory/40 hover:bg-ivory/70 hover:border-pink/60'
           }`}
         >
+          <div className="absolute inset-0 bg-petals opacity-[0.06] group-hover:opacity-10 transition-opacity" />
           <input
             ref={fileInputRef}
             type="file"
@@ -210,35 +203,39 @@ export default function UploadSection({
             onChange={(e) => e.target.files && processFiles(e.target.files)}
           />
 
-          <div className="flex flex-col items-center gap-3">
+          <div className="relative flex flex-col items-center gap-3">
             {loading ? (
               <>
-                <Loader2 className="w-12 h-12 text-bakery-gold animate-spin" />
-                <p className="font-medium text-bakery-brown">
-                  AI is reading your conversation...
+                <div className="w-16 h-16 rounded-full border-4 border-pink-soft border-t-pink-deep animate-spin-slow" />
+                <p className="font-display font-700 text-ink text-lg mt-1">
+                  Preparing your order...
                 </p>
-                <p className="text-sm text-bakery-brown/60">
-                  This usually takes a few seconds
+                <p className="text-sm text-ink-soft">
+                  AI is reading the conversation — just a few seconds
                 </p>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-2xl bg-cream-200 flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-bakery-gold" />
+                <div className="w-16 h-16 rounded-3xl bg-gradient-dawn flex items-center justify-center shadow-soft ring-1 ring-white/70 transition-transform duration-500 group-hover:-translate-y-1.5 group-hover:rotate-3">
+                  <Upload className="w-8 h-8 text-pink-deep" strokeWidth={2.2} />
                 </div>
 
-                <p className="font-medium text-bakery-brown">
+                <p className="font-display font-700 text-ink text-lg">
                   Drop {mode === 'text' ? 'your .txt export(s)' : 'screenshot(s)'} here or click to browse
                 </p>
 
-                <p className="text-sm text-bakery-brown/60">
+                <p className="text-sm text-ink-soft">
                   {MODES.find((m) => m.id === mode)?.hint}
                 </p>
 
                 {selectedFiles.length > 0 && (
-                  <p className="text-xs text-bakery-sage mt-2">
-                    Last upload: {selectedFiles.map((f) => f.name).join(', ')}
-                  </p>
+                  <div className="flex flex-wrap justify-center gap-2 mt-2">
+                    {selectedFiles.map((f) => (
+                      <span key={f.name} className="text-xs px-3 py-1 rounded-full bg-sage-soft/60 text-sage-deep font-500">
+                        {f.name}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </>
             )}
@@ -246,7 +243,7 @@ export default function UploadSection({
         </div>
       )}
 
-      <p className="mt-4 text-xs text-bakery-brown/50 text-center">
+      <p className="relative mt-5 text-xs text-ink-faint text-center">
         Tip: In WhatsApp, open the chat → ⋮ → More → Export chat → Without media
       </p>
     </section>
