@@ -5,7 +5,7 @@ import {
   Croissant,
   Sparkles,
 } from 'lucide-react'
-import { checkHealth, fetchStatistics } from './api/client'
+import { checkHealth, fetchOrders, fetchStatistics } from './api/client'
 import Header from './components/Header'
 import UploadSection from './components/UploadSection'
 import OrderResult from './components/OrderResult'
@@ -54,6 +54,7 @@ function App() {
   const [mode, setMode] = useState<UploadMode>('text')
   const [extractedOrders, setExtractedOrders] = useState<ExtractedEntry[]>([])
   const [statistics, setStatistics] = useState<Statistics | null>(null)
+  const [allOrders, setAllOrders] = useState<import('./types').OrderRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null)
@@ -67,17 +68,32 @@ function App() {
     }
   }
 
+  const loadOrders = async () => {
+    try {
+      const orders = await fetchOrders(200)
+      setAllOrders(orders)
+    } catch {
+      // Orders list is optional on first load
+    }
+  }
+
+  const refreshAll = async () => {
+    await Promise.all([loadStatistics(), loadOrders()])
+  }
+
   useEffect(() => {
     checkHealth()
   .then(() => setAiConfigured(true))
   .catch(() => setAiConfigured(false))
     loadStatistics()
+    loadOrders()
   }, [])
 
   const handleExtractSuccess = (order: ExtractedOrder, orderId?: number | null) => {
     setExtractedOrders((prev) => [...prev, { order, savedId: orderId ?? null }])
     setError(null)
     loadStatistics()
+    loadOrders()
   }
 
   const handleResetResults = () => {
@@ -165,8 +181,8 @@ function App() {
         <StatisticsPanel statistics={statistics} loading={!statistics} />
 
         <OrderHistory
-  recentOrders={statistics?.recent_orders ?? []}
-  onRefresh={loadStatistics}
+  recentOrders={allOrders}
+  onRefresh={refreshAll}
 />
 
         <footer className="text-center pt-6 pb-10 text-ink-faint text-sm">

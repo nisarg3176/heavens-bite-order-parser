@@ -74,9 +74,13 @@ const handleSave = async () => {
   const modalInput =
     'w-full border border-white/70 bg-ivory/70 shadow-inset px-4 py-3 rounded-2xl mb-3 focus:outline-none focus:ring-2 focus:ring-pink/40 focus:bg-ivory transition-all'
 
-  const filtered = recentOrders.filter((order) =>
-    (order.customer_name ?? '').toLowerCase().includes(search.toLowerCase()),
+  const query = search.trim().toLowerCase()
+
+  const matched = recentOrders.filter((order) =>
+    (order.customer_name ?? '').toLowerCase().includes(query),
   )
+
+  const filtered = query ? matched : recentOrders.slice(0, 5)
 
   return (
     <section className="glass rounded-4xl p-6 md:p-8 shadow-glass">
